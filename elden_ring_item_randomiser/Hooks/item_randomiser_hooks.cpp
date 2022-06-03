@@ -175,7 +175,7 @@ bool ERRandomiserBase::FindNeededSignatures() {
 
 	return game_data_manager_address && item_give_address && item_give_hook_address_map && item_give_hook_address_lua && equip_item_address
 		&& find_equipparamweapon_function && find_equipparamprotector_function && find_equipparamgoods_function && find_equipmtrlsetparam_function
-		&& find_inventoryid_function && (!skip_save_extension || save_extension_address);
+		&& find_inventoryid_function && (skip_save_extension || save_extension_address);
 };
 
 void ERRandomiserBase::RandomiseItemHook(uint64_t map_item_manager, ItemGiveStruct* item_info, void* item_details) {
