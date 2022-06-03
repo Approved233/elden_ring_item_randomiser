@@ -18,8 +18,10 @@ bool ERRandomiserBase::CreateMemoryEdits() {
 	game_data_manager_class = game_data_manager_address + *(int*)((char*)game_data_manager_address + 3) + 7;
 	solo_param_repository_class = solo_param_repository_address + *(int*)((char*)solo_param_repository_address + 3) + 7;
 
-	// Change the save file extension to prevent accidently uploading saves coming back online
-	memcpy(save_extension_address, L".rd2", 8);
+	if (!skip_save_extension && save_extension_address) {
+		// Change the save file extension to prevent accidently uploading saves coming back online
+		memcpy(save_extension_address, L".rd2", 8);
+	}
 
 	//bool is_random_keys, bool is_randomise_estusupgrade, uint64_t seed, uint64_t solo_param_repository_class, get_equipparamgoods_entry* find_equipparamgoods_function
 
@@ -85,7 +87,7 @@ bool ERRandomiserBase::FindNeededSignatures() {
 
 	// CS::MapItemManagerImp
 	Signature item_give_hook_signature_map = {
-		"\x4C\x8D\x45\x34\x48\x8D\x55\x90", 
+		"\x4C\x8D\x45\x34\x48\x8D\x55\x90",
 		"xxxxxxxx",
 		8,
 		0,
@@ -161,17 +163,19 @@ bool ERRandomiserBase::FindNeededSignatures() {
 	};
 	find_inventoryid_function = (get_inventoryid*)signature_class.FindSignature(find_getinventoryid_signature);
 
-	Signature get_save_file_extension_signature = {
+	if (!skip_save_extension) {
+		Signature get_save_file_extension_signature = {
 		"\x2E\x00\x73\x00\x6C\x00\x32\x00",
 		"xxxxxxxx",
 		8,
 		0,
-	};
-	save_extension_address = signature_class.FindSignature(get_save_file_extension_signature);
+		};
+		save_extension_address = signature_class.FindSignature(get_save_file_extension_signature);
+	}
 
 	return game_data_manager_address && item_give_address && item_give_hook_address_map && item_give_hook_address_lua && equip_item_address
 		&& find_equipparamweapon_function && find_equipparamprotector_function && find_equipparamgoods_function && find_equipmtrlsetparam_function
-		&& find_inventoryid_function && save_extension_address;
+		&& find_inventoryid_function && (!skip_save_extension || save_extension_address);
 };
 
 void ERRandomiserBase::RandomiseItemHook(uint64_t map_item_manager, ItemGiveStruct* item_info, void* item_details) {

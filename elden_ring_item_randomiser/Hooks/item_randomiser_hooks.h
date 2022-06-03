@@ -35,12 +35,13 @@ public:
 
 	};
 
-	ERRandomiserBase(bool is_auto_equip, bool is_random_keys, bool is_randomise_estusupgrade, bool is_randomise_mtrlupgrade, uint64_t seed) {
+	ERRandomiserBase(bool is_auto_equip, bool is_random_keys, bool is_randomise_estusupgrade, bool is_randomise_mtrlupgrade, bool is_skip_save_extension, uint64_t seed) {
 		auto_equip = is_auto_equip;
 		random_keys = is_random_keys;
 		random_keys = is_random_keys;
 		randomise_estusupgrade = is_randomise_estusupgrade;
 		randomise_mtrlupgrade = is_randomise_mtrlupgrade;
+		skip_save_extension = is_skip_save_extension;
 		mapitem_seed = (uint32_t)seed;
 		enemyitem_seed = (uint32_t)(seed >> 32 ^ mapitem_seed);
 		randomkey_seed = 0 - (mapitem_seed + enemyitem_seed);
@@ -80,6 +81,7 @@ private:
 	uint32_t random_keys;
 	uint32_t randomise_estusupgrade;
 	uint32_t randomise_mtrlupgrade;
+	uint32_t skip_save_extension;
 	uint32_t mapitem_seed;
 	uint32_t enemyitem_seed;
 	uint32_t randomkey_seed;

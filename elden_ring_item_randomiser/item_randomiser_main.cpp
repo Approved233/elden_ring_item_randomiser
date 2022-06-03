@@ -1,4 +1,5 @@
 #include "item_randomiser_main.h"
+#include <iostream>
 
 ERItemRandomiser* main_mod = nullptr;
 
@@ -30,12 +31,22 @@ void ERItemRandomiser::RunSaveListener() {
 		//
 	};
 
-	hook_class = ERRandomiserBase(user_preferences & option_autoequip, user_preferences & option_randomisekeys, user_preferences & option_randomiseestusupgrades,
-		user_preferences & option_randomisemtrlupgrades, randomiser_seed);
-	if (!hook_class.CreateMemoryEdits()) {
-		//
-		return;
-	};
+#if ITEM_DEBUG
+	try {
+#endif
+		hook_class = ERRandomiserBase(user_preferences & option_autoequip, user_preferences & option_randomisekeys, user_preferences & option_randomiseestusupgrades,
+			user_preferences & option_randomisemtrlupgrades, user_preferences & option_skipsaveextension, randomiser_seed);
+
+		if (!hook_class.CreateMemoryEdits()) {
+			//
+			return;
+		};
+#if ITEM_DEBUG
+	}
+	catch (std::exception& ex) {
+		std::cout << "Hook Failed: " << ex.what() << "\n";
+	}
+#endif
 
 	while (is_mod_active) {
 
@@ -45,7 +56,7 @@ void ERItemRandomiser::RunSaveListener() {
 		save_request_wait.wait(unique_lock, [&] { return save_manager_wake; });
 		if (signal_list_save) {
 			// Save... (no longer needed)
-		};	
+		};
 		*/
 	};
 
@@ -67,6 +78,7 @@ bool ERItemRandomiser::GetUserPreferences() {
 	user_preferences = option_reader.GetBoolean(header_segment, "randomisekeys", false) ? static_cast<UserPreferences>(user_preferences | option_randomisekeys) : user_preferences;
 	user_preferences = option_reader.GetBoolean(header_segment, "randomiseflaskmaterials", true) ? static_cast<UserPreferences>(user_preferences | option_randomiseestusupgrades) : user_preferences;
 	user_preferences = option_reader.GetBoolean(header_segment, "randomiseupgradematerials", true) ? static_cast<UserPreferences>(user_preferences | option_randomisemtrlupgrades) : user_preferences;
+	user_preferences = option_reader.GetBoolean(header_segment, "skipsaveextension", false) ? static_cast<UserPreferences>(user_preferences | option_skipsaveextension) : user_preferences;
 
 	// Param randomisation preferences
 	header_segment = "RANDOMISE";

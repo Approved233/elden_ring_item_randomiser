@@ -10,6 +10,7 @@ enum UserPreferences {
 	option_randomisekeys = 1 << 1,
 	option_randomiseestusupgrades = 1 << 2,
 	option_randomisemtrlupgrades = 1 << 3,
+	option_skipsaveextension = 1 << 4
 };
 
 struct EquipInfo {
